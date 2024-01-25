@@ -11,6 +11,28 @@ import numpy as np
 
 import torch
 
+def get_2d_sincos_pos_embed_for_coords(embed_dim, coords, image_size=224, patch_size=16):
+    """
+    embed_dim: int, the embedding dimension
+    coords: an array of shape [num_pixels, 2], containing the x, y coordinates of the pixels (on the raw image)
+    image_size: size of the rgb image 
+    patch size: size of the patch
+    return:
+    pos_embed: [num_pixels, embed_dim]
+    """
+    assert embed_dim % 2 == 0
+
+    # Separate the coordinates into x and y
+    grid_x = coords[:, 0] - patch_size // 2
+    grid_y = coords[:, 1] - patch_size // 2
+
+    # Use half of dimensions to encode each coordinate
+    emb_x = get_1d_sincos_pos_embed_from_grid(embed_dim // 2, grid_x, idx_range=image_size - patch_size)  # (num_pixels, D/2)
+    emb_y = get_1d_sincos_pos_embed_from_grid(embed_dim // 2, grid_y, idx_range=image_size - patch_size)  # (num_pixels, D/2)
+
+    emb = np.concatenate([emb_x, emb_y], axis=1)  # (num_pixels, D)
+    return emb
+
 # --------------------------------------------------------
 # 2D sine-cosine position embedding
 # References:
@@ -46,16 +68,17 @@ def get_2d_sincos_pos_embed_from_grid(embed_dim, grid):
     return emb
 
 
-def get_1d_sincos_pos_embed_from_grid(embed_dim, pos):
+def get_1d_sincos_pos_embed_from_grid(embed_dim, pos, idx_range=14):
     """
     embed_dim: output dimension for each position
     pos: a list of positions to be encoded: size (M,)
     out: (M, D)
     """
     assert embed_dim % 2 == 0
-    omega = np.arange(embed_dim // 2, dtype=np.float)
+    omega = np.arange(embed_dim // 2, dtype=np.float32)
     omega /= embed_dim / 2.
-    omega = 1. / 10000**omega  # (D/2,)
+    # scale per OG MAE-ViT (14x14, min index 0, max index 13)
+    omega = (1. / 10000**omega) / (idx_range - 1) * 13  # (D/2,)
 
     pos = pos.reshape(-1)  # (M,)
     out = np.einsum('m,d->md', pos, omega)  # (M, D/2), outer product

@@ -1,0 +1,8 @@
+--extra-index-url https://download.pytorch.org/whl/cu118
+torch==2.0.0
+torchvision
+flash-attn==2.3.1.post1
+timm==0.9.7
+scipy
+matplotlib
+tensorboard

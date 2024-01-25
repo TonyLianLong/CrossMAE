@@ -7,6 +7,8 @@
 import math
 
 import torch
+torch_version = torch.__version__
+is_torch2 = torch_version.startswith('2.') 
 
 from torchvision import transforms
 from torchvision.transforms import functional as F
@@ -21,7 +23,10 @@ class RandomResizedCrop(transforms.RandomResizedCrop):
     """
     @staticmethod
     def get_params(img, scale, ratio):
-        width, height = F._get_image_size(img)
+        if is_torch2:
+            width, height = F.get_image_size(img)
+        else:
+            width, height = F._get_image_size(img)
         area = height * width
 
         target_area = area * torch.empty(1).uniform_(scale[0], scale[1]).item()
