@@ -8,7 +8,7 @@ by <a href="https://max-fu.github.io">Letian Fu*</a>, <a href="https://tonylian.
   <img src="https://crossmae.github.io/crossmae2.jpg" width="800">
 </p>
 
-This is a PyTorch implementation of the CrossMAE paper [Rethinking Patch Dependence for Masked Autoencoders](https://crossmae.github.io/). The code is based on the original [MAE](https://github.com/facebookresearch/mae) repo. The codebase supports CrossMAE and MAE, with `timm==0.9.7`, `torch==2.0.0`, and flash-attn 2 training support.
+This is a PyTorch implementation of the CrossMAE paper [Rethinking Patch Dependence for Masked Autoencoders](https://crossmae.github.io/). The code is based on the original [MAE](https://github.com/facebookresearch/mae) repo. The codebase supports CrossMAE and MAE, with `timm==0.9.7`, `torch==2.0.0`, and flash-attn 2.
 
 ## Models
 The encoder part of CrossMAE matches exactly with MAE. Therefore, we use the same code for fine-tuning. We also encourage you to try CrossMAE checkpoints in your downstream applications. These models are trained on ImageNet-1k for 800 epochs (except that 448 models are trained for 400 epochs), with masking ratio and kept mask ratio both set to 0.75.
@@ -76,7 +76,7 @@ This should give:
 * Acc@1 83.722 Acc@5 96.686 loss 0.729
 ```
 
-You could replace `vit_base_patch16` with `vit_small_patch16` or `vit_large_patch16` to evaluate ViT-S or ViT-L.
+You could replace `vit_base_patch16` with `vit_small_patch16` or `vit_large_patch16` to evaluate ViT-S or ViT-L. To work with 448 input resolution, please append `--input_size 448` to the command line.
 
 ### License
 
