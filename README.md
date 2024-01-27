@@ -42,6 +42,36 @@ The encoder part of CrossMAE matches exactly with MAE. Therefore, we use the sam
 </tr>
 </tbody></table>
 
+## Train CrossMAE on **one single RTX 4090**
+With the efficiency of CrossMAE, it's possible to train CrossMAE on **one single RTX 4090** on a personal computer. The CPU is i9-14900k, with 96GB RAM.
+
+<details>
+  <summary>Instructions and trained models</summary>
+
+The training and fine-tuning command (with `${IMAGENET_DIR}` the directory for imagenet, ViT-S as an example):
+```sh
+CUDA_VISIBLE_DEVICES=0 OMP_NUM_THREADS=1 torchrun --nproc_per_node=1 --master_port 2780 main_pretrain.py --batch_size 512 --accum_iter 8 --model mae_vit_small_patch16 --norm_pix_loss --blr 1.5e-4 --weight_decay 0.05 --data_path ${IMAGENET_DIR} --num_workers 16 --multi_epochs_dataloader --output_dir output/imagenet-crossmae-vits-pretrain-wfm-mr0.75-kmr0.25-dd12-ep800 --cross_mae --weight_fm --decoder_depth 12 --mask_ratio 0.75 --kept_mask_ratio 0.75 --epochs 800 --warmup_epochs 40 --use_input
+
+CUDA_VISIBLE_DEVICES=0 OMP_NUM_THREADS=1 torchrun --nproc_per_node=1 --master_port 2860 main_finetune.py --batch_size 512 --accum_iter 2 --model vit_small_patch16 --finetune output/imagenet-crossmae-vits-pretrain-wfm-mr0.75-kmr0.25-dd12-ep800/checkpoint.pth --epoch 100 --blr 5e-4 --layer_decay 0.65 --weight_decay 0.05 --drop_path 0.1 --reprob 0.25 --mixup 0.8 --cutmix 1.0 --dist_eval --data_path ${IMAGENET_DIR} --num_workers 12 --output_dir output/imagenet-crossmae-vits-finetune-wfm-mr0.75-kmr0.25-dd12-ep800 --multi_epochs_dataloader
+# Reference results:
+# * Acc@1 79.462 Acc@5 94.864 loss 0.907
+```
+
+<table><tbody>
+<!-- START TABLE -->
+<!-- TABLE HEADER -->
+<th valign="bottom"></th>
+
+<!-- TABLE BODY -->
+<tr><td align="left">pretrained checkpoint</td><td align="left">fine-tuned checkpoint</td><td align="left">reference ImageNet accuracy</td></tr>
+<tr>
+<td align="center"><a href='https://huggingface.co/longlian/CrossMAE/resolve/main/vits-mr0.75-kmr0.25-dd12/imagenet-mae-cross-vits-pretrain-wfm-mr0.75-kmr0.75-dd12-ep800-ui.pth?download=true'>download</a></td>
+<td align="center"><a href='https://huggingface.co/longlian/CrossMAE/resolve/main/vits-mr0.75-kmr0.25-dd12/imagenet-mae-cross-vits-finetune-wfm-mr0.75-kmr0.75-dd12-ep800-ui.pth?download=true'>download</a></td>
+<td align="center">79.462</td>
+</tr>
+</tbody></table>
+</details>
+
 ## Instructions
 Please install the dependencies in `requirements.txt`:
 ```sh
