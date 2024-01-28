@@ -57,19 +57,24 @@ CUDA_VISIBLE_DEVICES=0 OMP_NUM_THREADS=1 torchrun --nproc_per_node=1 --master_po
 # * Acc@1 79.462 Acc@5 94.864 loss 0.907
 ```
 
-<table><tbody>
-<!-- START TABLE -->
-<!-- TABLE HEADER -->
-<th valign="bottom"></th>
+<table>
+<tbody>
+  <!-- START TABLE -->
+  <!-- TABLE HEADER -->
+  <tr valign="bottom">
+    <th align="left">pretrained checkpoint</th>
+    <th align="left">fine-tuned checkpoint</th>
+    <th align="left">reference ImageNet accuracy</th>
+  </tr>
+  <!-- TABLE BODY -->
+  <tr>
+    <td align="center"><a href='https://huggingface.co/longlian/CrossMAE/resolve/main/vits-mr0.75-kmr0.25-dd12/imagenet-mae-cross-vits-pretrain-wfm-mr0.75-kmr0.75-dd12-ep800-ui.pth?download=true'>download</a></td>
+    <td align="center"><a href='https://huggingface.co/longlian/CrossMAE/resolve/main/vits-mr0.75-kmr0.25-dd12/imagenet-mae-cross-vits-finetune-wfm-mr0.75-kmr0.75-dd12-ep800-ui.pth?download=true'>download</a></td>
+    <td align="center">79.462</td>
+  </tr>
+</tbody>
+</table>
 
-<!-- TABLE BODY -->
-<tr><td align="left">pretrained checkpoint</td><td align="left">fine-tuned checkpoint</td><td align="left">reference ImageNet accuracy</td></tr>
-<tr>
-<td align="center"><a href='https://huggingface.co/longlian/CrossMAE/resolve/main/vits-mr0.75-kmr0.25-dd12/imagenet-mae-cross-vits-pretrain-wfm-mr0.75-kmr0.75-dd12-ep800-ui.pth?download=true'>download</a></td>
-<td align="center"><a href='https://huggingface.co/longlian/CrossMAE/resolve/main/vits-mr0.75-kmr0.25-dd12/imagenet-mae-cross-vits-finetune-wfm-mr0.75-kmr0.75-dd12-ep800-ui.pth?download=true'>download</a></td>
-<td align="center">79.462</td>
-</tr>
-</tbody></table>
 </details>
 
 ## Instructions
