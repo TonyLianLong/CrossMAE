@@ -328,15 +328,14 @@ class CrossMAE(MaskedAutoencoderViT, PyTorchModelHubMixin):
 
 # create model
 config = dict(patch_size=16, embed_dim=384, depth=12, num_heads=6,
-        decoder_embed_dim=256, decoder_num_heads=8,
-        mlp_ratio=4, norm_layer=partial(nn.LayerNorm, eps=1e-6))
+        decoder_embed_dim=256, decoder_num_heads=8, mlp_ratio=4)
 
 model = CrossMAE(config)
 
 # load weights
 state_dict = torch.hub.load_state_dict_from_url("https://huggingface.co/longlian/CrossMAE/resolve/main/vits-mr0.75-kmr0.75-dd12/imagenet-mae-cross-vits-pretrain-wfm-mr0.75-kmr0.75-dd12-ep800-ui.pth?download=true",
                                                 map_location="cpu")
-model.load_state_dict(state_dict["model"])
+model.load_state_dict(state_dict["model"], strict=False)
 
 # save locally
 # model.save_pretrained("./crossmae-small", config=config)
