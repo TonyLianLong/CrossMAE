@@ -18,10 +18,12 @@ import torch.nn as nn
 
 from transformer_utils import Block, CrossAttentionBlock, PatchEmbed
 
+from huggingface_hub import PyTorchModelHubMixin
+
 from util.pos_embed import get_2d_sincos_pos_embed
 
 class WeightedFeatureMaps(nn.Module):
-    def __init__(self, k, embed_dim, *, norm_layer=nn.LayerNorm, decoder_depth):
+    def __init__(self, k, embed_dim, *, norm_layer=partial(nn.LayerNorm, eps=1e-6), decoder_depth):
         super(WeightedFeatureMaps, self).__init__()
         self.linear = nn.Linear(k, decoder_depth, bias=False)
         
@@ -318,3 +320,29 @@ mae_vit_small_patch16 = mae_vit_small_patch16_dec512d8b
 mae_vit_base_patch16 = mae_vit_base_patch16_dec512d8b  # decoder: 512 dim, 8 blocks
 mae_vit_large_patch16 = mae_vit_large_patch16_dec512d8b  # decoder: 512 dim, 8 blocks
 mae_vit_huge_patch14 = mae_vit_huge_patch14_dec512d8b  # decoder: 512 dim, 8 blocks
+
+
+class CrossMAE(MaskedAutoencoderViT, PyTorchModelHubMixin):
+    def __init__(self, config):
+        super().__init__(**config)
+
+# create model
+config = dict(patch_size=16, embed_dim=384, depth=12, num_heads=6,
+        decoder_embed_dim=256, decoder_num_heads=8,
+        mlp_ratio=4, norm_layer=partial(nn.LayerNorm, eps=1e-6))
+
+model = CrossMAE(config)
+
+# load weights
+state_dict = torch.hub.load_state_dict_from_url("https://huggingface.co/longlian/CrossMAE/resolve/main/vits-mr0.75-kmr0.75-dd12/imagenet-mae-cross-vits-pretrain-wfm-mr0.75-kmr0.75-dd12-ep800-ui.pth?download=true",
+                                                map_location="cpu")
+model.load_state_dict(state_dict["model"])
+
+# save locally
+# model.save_pretrained("./crossmae-small", config=config)
+
+# upload to huggingface hub
+model.push_to_hub("nielsr/crossmae-small-patch16", config=config)
+
+# load from huggingface hub
+model = CrossMAE.from_pretrained("nielsr/crossmae-small-patch16")
