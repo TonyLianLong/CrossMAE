@@ -11,7 +11,7 @@ by <a href="https://max-fu.github.io">Letian Fu*</a>, <a href="https://tonylian.
 This is a PyTorch implementation of the CrossMAE paper [Rethinking Patch Dependence for Masked Autoencoders](https://crossmae.github.io/). The code is based on the original [MAE](https://github.com/facebookresearch/mae) repo. The codebase supports CrossMAE and MAE, with `timm==0.9.7`, `torch==2.0.0`, and flash-attn 2.
 
 ## Models
-The encoder part of CrossMAE matches exactly with MAE. Therefore, we use the same code for fine-tuning. We also encourage you to try CrossMAE checkpoints in your downstream applications. These models are trained on ImageNet-1k for 800 epochs (except that 448 models are trained for 400 epochs), with masking ratio and kept mask ratio both set to 0.75.
+The encoder part of CrossMAE matches exactly with MAE. Therefore, we use the same code for fine-tuning. We also encourage you to try CrossMAE checkpoints in your downstream applications. These models are trained on ImageNet-1k for 800 epochs (except that 448 models are trained for 400 epochs), with masking ratio and kept mask ratio both set to 0.75, except that ViT-H is with masking ratio 0.75 and kept mask ratio 0.25.
 
 <table><tbody>
 <!-- START TABLE -->
@@ -21,24 +21,35 @@ The encoder part of CrossMAE matches exactly with MAE. Therefore, we use the sam
 <th valign="bottom">ViT-Base</th>
 <th valign="bottom">ViT-Base<sub>448</sub></th>
 <th valign="bottom">ViT-Large</th>
+<th valign="bottom">ViT-Huge</th>
 <!-- TABLE BODY -->
 <tr><td align="left">pretrained checkpoint</td>
 <td align="center"><a href='https://huggingface.co/longlian/CrossMAE/resolve/main/vits-mr0.75-kmr0.75-dd12/imagenet-mae-cross-vits-pretrain-wfm-mr0.75-kmr0.75-dd12-ep800-ui.pth?download=true'>download</a></td>
 <td align="center"><a href='https://huggingface.co/longlian/CrossMAE/resolve/main/vitb-mr0.75-kmr0.75-dd12/imagenet-mae-cross-vitb-pretrain-wfm-mr0.75-kmr0.75-dd12-ep800-ui.pth?download=true'>download</a></td>
 <td align="center"><a href='https://huggingface.co/longlian/CrossMAE/resolve/main/vitb-mr0.75-kmr0.75-dd12-448-400/imagenet-mae-cross-vitb-pretrain-wfm-mr0.75-kmr0.25-dd12-ep400-ui-res-448.pth?download=true'>download</a></td>
 <td align="center"><a href='https://huggingface.co/longlian/CrossMAE/resolve/main/vitl-mr0.75-kmr0.75-dd12/imagenet-mae-cross-vitl-pretrain-wfm-mr0.75-kmr0.75-dd12-ep800-ui.pth?download=true'>download</a></td>
+<td align="center"><a href='https://huggingface.co/longlian/CrossMAE/resolve/main/vith-mr0.75-kmr0.25-dd12/imagenet-mae-cross-vith-pretrain-wfm-mr0.75-kmr0.25-dd12-ep800-ui.pth?download=true'>download</a></td>
 </tr>
 <tr><td align="left">fine-tuned checkpoint</td>
 <td align="center"><a href='https://huggingface.co/longlian/CrossMAE/resolve/main/vits-mr0.75-kmr0.75-dd12/imagenet-mae-cross-vits-finetune-wfm-mr0.75-kmr0.75-dd12-ep800-ui.pth?download=true'>download</a></td>
 <td align="center"><a href='https://huggingface.co/longlian/CrossMAE/resolve/main/vitb-mr0.75-kmr0.75-dd12/imagenet-mae-cross-vitb-finetune-wfm-mr0.75-kmr0.75-dd12-ep800-ui.pth?download=true'>download</a></td>
 <td align="center"><a href='https://huggingface.co/longlian/CrossMAE/resolve/main/vitb-mr0.75-kmr0.75-dd12-448-400/imagenet-mae-cross-vitb-finetune-wfm-mr0.75-kmr0.25-dd12-ep400-ui-res-448.pth?download=true'>download</a></td>
 <td align="center"><a href='https://huggingface.co/longlian/CrossMAE/resolve/main/vitl-mr0.75-kmr0.75-dd12/imagenet-mae-cross-vitl-finetune-wfm-mr0.75-kmr0.75-dd12-ep800-ui.pth?download=true'>download</a></td>
+<td align="center"><a href='https://huggingface.co/longlian/CrossMAE/resolve/main/vith-mr0.75-kmr0.25-dd12/imagenet-mae-cross-vith-finetune-wfm-mr0.75-kmr0.25-dd12-ep800-ui.pth?download=true'>download</a></td>
 </tr>
-<tr><td align="left">reference ImageNet accuracy</td>
-<td align="center">79.318</td>
-<td align="center">83.722</td>
-<td align="center">84.598</td>
-<td align="center">85.432</td>
+<tr><td align="left"><b>Reference ImageNet accuracy (ours)</b></td>
+<td align="center"><b>79.318</b></td>
+<td align="center"><b>83.722</b></td>
+<td align="center"><b>84.598</b></td>
+<td align="center"><b>85.432</b></td>
+<td align="center"><b>86.256</b></td>
+</tr>
+<tr><td align="left">MAE ImageNet accuracy (baseline)</td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center">84.8</td>
+<td align="center"></td>
+<td align="center">85.9</td>
 </tr>
 </tbody></table>
 
