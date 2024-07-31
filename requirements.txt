@@ -6,3 +6,4 @@ timm==0.9.7
 scipy
 matplotlib
 tensorboard
+packaging
