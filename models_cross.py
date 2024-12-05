@@ -270,15 +270,31 @@ class MaskedAutoencoderViT(nn.Module):
 
         loss = (pred - target) ** 2
         loss = loss.mean()
-        return loss
+        return loss, target
 
-    def forward(self, imgs, mask_ratio=0.75, kept_mask_ratio=0.5):
+    def forward(self, imgs, mask_ratio=0.75, kept_mask_ratio=0.75, vis=False):
         with torch.cuda.amp.autocast():
             latent, mask, ids_restore, coords = self.forward_encoder(imgs, mask_ratio, kept_mask_ratio)
             pred, combined = self.forward_decoder(latent, mask, ids_restore, coords, mask_ratio, kept_mask_ratio)  # [N, L, p*p*3]
-            loss = self.forward_loss(imgs, pred, mask, coords)
-            # return loss, pred, mask
-            return loss
+            loss, target = self.forward_loss(imgs, pred, mask, coords)
+            if vis:
+                # assumes mask ratio is the same as kept_mask_ratio for visualizations
+                assert mask_ratio == kept_mask_ratio, "mask_ratio needs to be the same as kept_mask_ratio for visualizations. Otherwise we have unpredicted patches."
+                # create some zero tensors
+                with torch.no_grad():
+                    N, L = mask.shape[0], mask.shape[1]
+                    
+                    combined = torch.zeros(N, L, pred.shape[2], device=pred.device, dtype=pred.dtype)
+                    combined[mask.bool()] = pred.view(-1, pred.shape[2])
+                    pred_combined = combined
+                    
+                    combined = torch.zeros(N, L, pred.shape[2], device=pred.device, dtype=pred.dtype)
+                    combined[mask.bool()] = target.view(-1, target.shape[2])
+                    target_combined = combined
+                    
+                return loss, pred_combined, target_combined, mask
+            else:
+                return loss
 
 
 def mae_vit_small_patch16_dec512d8b(**kwargs):
