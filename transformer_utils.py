@@ -188,14 +188,44 @@ def handle_flash_attn(args):
 
     print(f"enable_flashattn: {enable_flashattn}")
 
-    if args.enable_flash_attention2:
-        print("Flash attention 2 enabled")
+    if args.flash_attn == "fa3":
+        print("Flash attention 3 library enabled")
+        
+        # This requies installing the hopper directory in https://github.com/Dao-AILab/flash-attention/tree/v2.7.2.post1
+        
+        assert sm[0] >= 9, "Flash attn requires compute capabilities 9.0"
+
+        import flash_attn_interface
+
+        torch_scaled_dot_product_attention = F.scaled_dot_product_attention
+
+        def scaled_dot_product_attention(query, key, value, attn_mask=None, dropout_p=0.0, is_causal=False):
+            # torch convention: B, num heads, seq len, C
+            # print(f"Using flash attention, query: {query.shape}, key: {key.shape}, value: {value.shape}")
+            assert attn_mask is None, attn_mask
+            head_dim = query.shape[-1]
+            if head_dim > 256:
+                return torch_scaled_dot_product_attention(query, key, value, attn_mask=attn_mask, dropout_p=dropout_p, is_causal=is_causal)
+            assert dropout_p == 0, f"Dropout not supported in flash attn 3"
+            
+            # `flash_attn_interface.flash_attn_func`'s return value is out, lse (logsumexp). We only take `out`.
+            out = torch.permute(flash_attn_interface.flash_attn_func(torch.permute(query, [0, 2, 1, 3]), torch.permute(key, [0, 2, 1, 3]), torch.permute(value, [0, 2, 1, 3]), causal=is_causal)[0], [0, 2, 1, 3])
+            return out
+
+        F.scaled_dot_product_attention = scaled_dot_product_attention
+
+        # Use memory efficient attention as a fallback
+        torch.backends.cuda.enable_flash_sdp(False)
+        torch.backends.cuda.enable_mem_efficient_sdp(True)
+        torch.backends.cuda.enable_math_sdp(False)
+    elif args.flash_attn == "fa2":
+        print("Flash attention 2 library enabled")
         
         # This requies installing https://github.com/Dao-AILab/flash-attention/tree/v2.2.3
         
-        assert enable_flashattn, "Flash attn requires compute capabilities"
+        assert enable_flashattn, "Flash attn requires compute capabilities >= 7.5"
 
-        from flash_attn import flash_attn_func
+        import flash_attn
 
         torch_scaled_dot_product_attention = F.scaled_dot_product_attention
 
@@ -205,7 +235,7 @@ def handle_flash_attn(args):
             assert attn_mask is None, attn_mask
             if query.shape[-1] > 256:
                 return torch_scaled_dot_product_attention(query, key, value, attn_mask=attn_mask, dropout_p=dropout_p, is_causal=is_causal)
-            return torch.permute(flash_attn_func(torch.permute(query, [0, 2, 1, 3]), torch.permute(key, [0, 2, 1, 3]), torch.permute(value, [0, 2, 1, 3]), dropout_p=dropout_p, causal=is_causal), [0, 2, 1, 3])
+            return torch.permute(flash_attn.flash_attn_func(torch.permute(query, [0, 2, 1, 3]), torch.permute(key, [0, 2, 1, 3]), torch.permute(value, [0, 2, 1, 3]), dropout_p=dropout_p, causal=is_causal), [0, 2, 1, 3])
 
         F.scaled_dot_product_attention = scaled_dot_product_attention
 
@@ -214,7 +244,8 @@ def handle_flash_attn(args):
         torch.backends.cuda.enable_mem_efficient_sdp(True)
         torch.backends.cuda.enable_math_sdp(False)
     else:
-        print("Flash attention 2 is not enabled. Using built-in attention implementation.")
+        # If compute capabilities >= 7.5, flash sdp will be enabled. On torch >= 2.2, it's still fa2. Otherwise it's fa.
+        print("Flash attention 2 library is not enabled. Using built-in attention implementation (F.scaled_dot_product_attention).")
         torch.backends.cuda.enable_flash_sdp(enable_flashattn)
         torch.backends.cuda.enable_mem_efficient_sdp(not enable_flashattn)
         torch.backends.cuda.enable_math_sdp(False)

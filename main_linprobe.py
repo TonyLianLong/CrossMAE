@@ -115,7 +115,7 @@ def get_args_parser():
     parser.add_argument('--dist_url', default='env://',
                         help='url used to set up distributed training')
     
-    parser.add_argument('--enable_flash_attention2', action='store_true', default=False, help="Use flash attntion 2")
+    parser.add_argument('--flash-attn', choices=['sdpa', 'fa2', 'fa3'], default='sdpa', help="Use flash attntion 2/3 when sdpa kernel is called. sdpa: do not patch sdpa kernel (default).")
     
     return parser
 
