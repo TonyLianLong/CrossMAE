@@ -1,7 +1,7 @@
 ## CrossMAE: Rethinking Patch Dependence for Masked Autoencoders
 by <a href="https://max-fu.github.io">Letian Fu*</a>, <a href="https://tonylian.com">Long Lian*</a>, <a href="https://renwang435.github.io">Renhao Wang</a>, <a href="https://bfshi.github.io">Baifeng Shi</a>, <a href="https://people.eecs.berkeley.edu/~xdwang">Xudong Wang</a>, <a href="https://www.adamyala.org">Adam Yala†</a>, <a href="https://people.eecs.berkeley.edu/~trevor">Trevor Darrell†</a>, <a href="https://people.eecs.berkeley.edu/~efros">Alexei A. Efros†</a>, <a href="https://goldberg.berkeley.edu">Ken Goldberg†</a> at UC Berkeley and UCSF
 
-[[Paper](https://arxiv.org/abs/2401.14391)] | [[Project Page](https://crossmae.github.io/)] | [[Citation](#citation)]
+[[Paper](https://openreview.net/forum?id=JT2KMuo2BV)] | [[Project Page](https://crossmae.github.io/)] | [[Citation](#citation)]
 
 
 <p align="center">
@@ -133,10 +133,14 @@ Please give us a star 🌟 on Github to support us!
 
 Please cite our work if you find our work inspiring or use our code in your work:
 ```
-@article{fu2024rethinking,
-    title={Rethinking Patch Dependence for Masked Autoencoders}, 
-    author={Letian Fu and Long Lian and Renhao Wang and Baifeng Shi and Xudong Wang and Adam Yala and Trevor Darrell and Alexei A. Efros and Ken Goldberg},
-    journal={arXiv preprint arXiv:2401.14391},
-    year={2024}
+@article{
+    fu2025rethinking,
+    title={Rethinking Patch Dependence for Masked Autoencoders},
+    author={Letian Fu and Long Lian and Renhao Wang and Baifeng Shi and XuDong Wang and Adam Yala and Trevor Darrell and Alexei A Efros and Ken Goldberg},
+    journal={Transactions on Machine Learning Research},
+    issn={2835-8856},
+    year={2025},
+    url={https://openreview.net/forum?id=JT2KMuo2BV},
+    note={}
 }
 ```
